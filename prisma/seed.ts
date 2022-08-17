@@ -1,19 +1,19 @@
-import { PrismaClient } from '@prisma/client'
-import faker from 'faker'
+import { PrismaClient } from "@prisma/client";
+import faker from "faker";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-const NUMBER_OF_USERS = 10
-const NUMBER_OF_ROOMS = 20
+const NUMBER_OF_USERS = 10;
+const NUMBER_OF_ROOMS = 20;
 
 const roomIds = Array.from({
   length: NUMBER_OF_ROOMS,
-}).map(() => faker.datatype.uuid())
+}).map(() => faker.datatype.uuid());
 
 const rooms = Array.from({
   length: NUMBER_OF_ROOMS,
 }).map((_, i) => ({
-  id: roomIds[i],
+  identification: roomIds[i],
   price: faker.datatype.number({
     min: 50,
     max: 600,
@@ -32,7 +32,7 @@ const rooms = Array.from({
   }).map(() => ({
     fileName: faker.image.imageUrl(),
   })),
-}))
+}));
 
 const data = Array.from({ length: NUMBER_OF_USERS }).map(() => ({
   email: faker.internet.email(),
@@ -56,12 +56,12 @@ const data = Array.from({ length: NUMBER_OF_USERS }).map(() => ({
       max: 4,
     }),
   }).map(() => {
-    const startDate = faker.date.past()
-    const endDate = faker.date.future()
+    const startDate = faker.date.past();
+    const endDate = faker.date.future();
     const price = faker.datatype.number({
       min: 50,
       max: 600,
-    })
+    });
     return {
       startDate,
       endDate,
@@ -71,24 +71,25 @@ const data = Array.from({ length: NUMBER_OF_USERS }).map(() => ({
         price, // difference between dates * price
       room: {
         connect: {
-          id: roomIds[
-            faker.datatype.number({
-              min: 0,
-              max: NUMBER_OF_ROOMS - 1,
-            })
-          ],
+          identification:
+            roomIds[
+              faker.datatype.number({
+                min: 0,
+                max: NUMBER_OF_ROOMS - 1,
+              })
+            ],
         },
       },
-    }
+    };
   }),
-}))
+}));
 
 async function main() {
   rooms.forEach(
     async (room) =>
       await prisma.room.create({
         data: {
-          id: room.id,
+          identification: room.identification,
           address: room.address,
           price: room.price,
           summary: room.summary,
@@ -96,8 +97,8 @@ async function main() {
             create: room.media,
           },
         },
-      }),
-  )
+      })
+  );
 
   for (let entry of data) {
     await prisma.user.create({
@@ -111,10 +112,10 @@ async function main() {
           create: entry.reviews,
         },
       },
-    })
+    });
   }
 }
 
 main().finally(async () => {
-  await prisma.$disconnect()
-})
+  await prisma.$disconnect();
+});
