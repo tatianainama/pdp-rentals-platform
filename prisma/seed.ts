@@ -36,7 +36,8 @@ const rooms = Array.from({
 
 const data = Array.from({ length: NUMBER_OF_USERS }).map(() => ({
   email: faker.internet.email(),
-  name: faker.name.firstName(),
+  firstName: faker.name.firstName(),
+  lastName: faker.name.lastName(),
   reviews: Array.from({
     length: faker.datatype.number({
       max: 1,
@@ -104,7 +105,8 @@ async function main() {
     await prisma.user.create({
       data: {
         email: entry.email,
-        name: entry.name,
+        firstName: entry.firstName,
+        lastName: entry.lastName,
         reservations: {
           create: entry.reservations,
         },

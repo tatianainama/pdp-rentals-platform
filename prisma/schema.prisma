@@ -11,27 +11,31 @@ datasource db {
 }
 
 model User {
-  identification String        @id @default(uuid())
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  email          String        @unique
-  name           String
-  reservations   Reservation[]
-  reviews        Review[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  email        String
+  firstName    String
+  lastName     String
+  reservations Reservation[]
+  reviews      Review[]
+
+  @@unique(fields: [firstName, lastName, email], name: "userIdentification")
 }
 
 model Reservation {
-  identification String   @id @default(uuid())
+  identification String   @unique @default(uuid())
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  userId         String?
   startDate      DateTime
   endDate        DateTime
   price          Int
   total          Int
   roomId         String?
   room           Room?    @relation(fields: [roomId], references: [identification])
-  user           User?    @relation(fields: [userId], references: [identification])
+  userFirstName  String
+  userLastName   String
+  userEmail      String
+  user           User     @relation(fields: [userFirstName, userLastName, userEmail], references: [firstName, lastName, email])
 }
 
 model Room {
@@ -59,8 +63,10 @@ model Review {
   updatedAt      DateTime @updatedAt
   rating         Int
   comment        String
-  userId         String
-  user           User     @relation(fields: [userId], references: [identification])
+  userFirstName  String
+  userLastName   String
+  userEmail      String
+  user           User     @relation(fields: [userFirstName, userLastName, userEmail], references: [firstName, lastName, email])
 }
 
 model Media {
